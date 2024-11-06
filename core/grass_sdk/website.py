@@ -34,7 +34,8 @@ class GrassRest(BaseClient):
         self.password = password
 
         # 初始化一个空的字典（map）
-        self.loginMap = {}
+        self.loginUserIdMap = {}
+        self.loginTokenMap = {}
 
         self.id = None
 
@@ -77,17 +78,22 @@ class GrassRest(BaseClient):
         return await response.json()
 
     async def enter_account(self):
-        loginJson = None
-        if self.email in self.loginMap:
+        loginUserId = None
+        loginToken = None
+        if self.email in self.loginUserIdMap:
+            loginUserId = self.loginUserIdMap[self.email]
+            loginToken = self.loginTokenMap[self.email]
             logger.info(f"{self.email} | 从缓存中获取到用户登录信息，不再进行登录!")
-            loginJson = self.loginMap[self.email]
         else:
             loginJson = await self.handle_login()
-            self.loginMap[self.email] = loginJson
+            loginUserId = loginJson['result']['data']['userId']
+            loginToken = loginJson['result']['data']['accessToken']
+            self.loginUserIdMap[self.email] = loginUserId
+            self.loginTokenMap[self.email] = loginToken
             logger.info(f"{self.email} | 未获取到用户信息，直接登录成功!")
 
-        self.website_headers['Authorization'] = loginJson['result']['data']['accessToken']
-        return loginJson['result']['data']['userId']
+        self.website_headers['Authorization'] = loginToken
+        return loginUserId
 
     @retry(stop=stop_after_attempt(3),
            before_sleep=lambda retry_state, **kwargs: logger.info(f"Retrying... {retry_state.outcome.exception()}"),
