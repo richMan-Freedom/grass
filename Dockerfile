@@ -13,7 +13,7 @@ RUN pip3 install --upgrade pip && \
     --no-cache-dir \
     -r /tmp/requirements.txt
 
-COPY . .
+COPY main.py .
+COPY ./core/ ./core
 
 CMD ["python", "main.py"]
-

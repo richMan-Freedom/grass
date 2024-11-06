@@ -4,10 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # image: jagerzhang/grass
+    image: grass:latest
+    container_name: grass
     volumes:
-      - ./data/accounts.txt:/grass/data/accounts.txt
-      - ./data/proxies.txt:/grass/data/proxies.txt
+      - ./data:/grass/data
+      - ./logs:/grass/logs
     ports:
       - 8080:80
     environment:
