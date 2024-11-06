@@ -115,14 +115,15 @@ async def worker_task(_id, account: str, proxy: str = None, wallet: str = None, 
 
 
 async def main():
+    # 读取账号密码信息
     accounts = file_to_list(ACCOUNTS_FILE_PATH)
 
     if not accounts:
         logger.warning("No accounts found!")
         return
-
+    # 读取代理信息
     proxies = [Proxy.from_str(proxy).as_url for proxy in file_to_list(PROXIES_FILE_PATH)]
-
+    # 链接数据库
     db = AccountsDB('data/proxies_stats.db')
     await db.connect()
 
@@ -138,12 +139,14 @@ async def main():
     await db.delete_all_from_extra_proxies()
     await db.push_extra_proxies(proxies[len(accounts):])
 
+    # 自动注册账号
     autoreger = AutoReger.get_accounts(
         (ACCOUNTS_FILE_PATH, PROXIES_FILE_PATH, WALLETS_FILE_PATH),
         with_id=True,
         static_extra=(db, )
     )
 
+    # 线程数
     threads = THREADS
 
     if REGISTER_ACCOUNT_ONLY:
@@ -172,7 +175,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    bot_info("GRASS_AUTO")
+    bot_info("GRASS  RICH MAN")
 
     if sys.platform == 'win32':
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
