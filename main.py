@@ -16,6 +16,7 @@ from core.utils import logger, file_to_list
 from core.utils.accounts_db import AccountsDB
 from core.utils.exception import EmailApproveLinkNotFoundException, LoginException, RegistrationException
 from core.utils.generate.person import Person
+from core.utils.state import g
 from data.config import ACCOUNTS_FILE_PATH, PROXIES_FILE_PATH, REGISTER_ACCOUNT_ONLY, THREADS, REGISTER_DELAY, \
     CLAIM_REWARDS_ONLY, APPROVE_EMAIL, APPROVE_WALLET_ON_EMAIL, MINING_MODE, CONNECT_WALLET, \
     WALLETS_FILE_PATH, SEND_WALLET_APPROVE_LINK_TO_EMAIL, SINGLE_IMAP_ACCOUNT, SEMI_AUTOMATIC_APPROVE_LINK
@@ -118,6 +119,9 @@ async def main():
     # 读取账号密码信息
     accounts = file_to_list(ACCOUNTS_FILE_PATH)
 
+    g.loginUserIdMap = {}
+    g.loginTokenMap = {}
+
     if not accounts:
         logger.warning("No accounts found!")
         return
@@ -176,6 +180,7 @@ async def main():
 
 if __name__ == "__main__":
     bot_info("GRASS  RICH MAN")
+    
 
     if sys.platform == 'win32':
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

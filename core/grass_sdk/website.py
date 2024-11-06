@@ -17,6 +17,7 @@ from core.utils.generate.person import Person
 from core.utils.mail.mail import MailUtils
 from core.utils.session import BaseClient
 from solders.keypair import Keypair
+from core.utils.state import g
 
 from data.config import SEMI_AUTOMATIC_APPROVE_LINK
 
@@ -81,15 +82,15 @@ class GrassRest(BaseClient):
         loginUserId = None
         loginToken = None
         if self.email in self.loginUserIdMap:
-            loginUserId = self.loginUserIdMap[self.email]
-            loginToken = self.loginTokenMap[self.email]
+            loginUserId = g.loginUserIdMap[self.email]
+            loginToken = g.loginTokenMap[self.email]
             logger.info(f"{self.email} | 从缓存中获取到用户登录信息，不再进行登录!")
         else:
             loginJson = await self.handle_login()
             loginUserId = loginJson['result']['data']['userId']
             loginToken = loginJson['result']['data']['accessToken']
-            self.loginUserIdMap[self.email] = loginUserId
-            self.loginTokenMap[self.email] = loginToken
+            g.loginUserIdMap[self.email] = loginUserId
+            g.loginTokenMap[self.email] = loginToken
             logger.info(f"{self.email} | 未获取到用户信息，直接登录成功!")
 
         self.website_headers['Authorization'] = loginToken
