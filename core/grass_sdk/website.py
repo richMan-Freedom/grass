@@ -33,6 +33,9 @@ class GrassRest(BaseClient):
         self.email = email
         self.password = password
 
+        # 初始化一个空的字典（map）
+        self.loginMap = {}
+
         self.id = None
 
     async def create_account_handler(self):
@@ -74,10 +77,17 @@ class GrassRest(BaseClient):
         return await response.json()
 
     async def enter_account(self):
-        res_json = await self.handle_login()
-        self.website_headers['Authorization'] = res_json['result']['data']['accessToken']
+        loginJson = None
+        if self.email in self.loginMap:
+            logger.info(f"{self.email} | 从缓存中获取到用户登录信息，不再进行登录!")
+            loginJson = self.loginMap[self.email]
+        else:
+            loginJson = await self.handle_login()
+            self.loginMap[self.email] = loginJson
+            logger.info(f"{self.email} | 未获取到用户信息，直接登录成功!")
 
-        return res_json['result']['data']['userId']
+        self.website_headers['Authorization'] = loginJson['result']['data']['accessToken']
+        return loginJson['result']['data']['userId']
 
     @retry(stop=stop_after_attempt(3),
            before_sleep=lambda retry_state, **kwargs: logger.info(f"Retrying... {retry_state.outcome.exception()}"),
