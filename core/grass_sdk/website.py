@@ -81,7 +81,7 @@ class GrassRest(BaseClient):
     async def enter_account(self):
         loginUserId = None
         loginToken = None
-        if self.email in self.loginUserIdMap:
+        if self.email in g.loginUserIdMap:
             loginUserId = g.loginUserIdMap[self.email]
             loginToken = g.loginTokenMap[self.email]
             logger.info(f"{self.email} | 从缓存中获取到用户登录信息，不再进行登录!")
