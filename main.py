@@ -97,6 +97,7 @@ async def worker_task(_id, account: str, proxy: str = None, wallet: str = None, 
         elif CLAIM_REWARDS_ONLY:
             await grass.claim_rewards()
         else:
+            # 挖币模式
             await grass.start()
 
         return True
@@ -152,9 +153,10 @@ async def main():
 
     # 线程数
     threads = THREADS
-
+    # 注册账号模式
     if REGISTER_ACCOUNT_ONLY:
         msg = "__REGISTER__ MODE"
+    # 绑定钱包
     elif APPROVE_EMAIL or CONNECT_WALLET or SEND_WALLET_APPROVE_LINK_TO_EMAIL or APPROVE_WALLET_ON_EMAIL:
         if CONNECT_WALLET:
             wallets = file_to_list(WALLETS_FILE_PATH)
@@ -165,9 +167,11 @@ async def main():
                 logger.error("Wallets count != accounts count")
                 return
         msg = "__APPROVE__ MODE"
+    # 领取奖励
     elif CLAIM_REWARDS_ONLY:
         msg = "__CLAIM__ MODE"
     else:
+        # 挖矿模式
         msg = "__MINING__ MODE"
         threads = len(autoreger.accounts)
 
